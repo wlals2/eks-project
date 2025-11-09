@@ -1,0 +1,28 @@
+# k8s/base/ingress-base.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: goupang-ingress
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+spec:
+  ingressClassName: alb
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-service
+            port:
+              number: 80
+      - path: /petclinic
+        pathType: Prefix
+        backend:
+          service:
+            name: petclinic-service
+            port:
+              number: 8080

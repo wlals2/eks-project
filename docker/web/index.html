@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goupang Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 600px;
+        }
+        h1 {
+            color: #667eea;
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #666;
+            font-size: 18px;
+            margin-bottom: 40px;
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin: 10px;
+        }
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        .status {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            min-height: 60px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛍️ Goupang Shop</h1>
+        <p>Welcome to Goupang Online Shopping Mall</p>
+        
+        <button class="btn" onclick="goToPetclinic()">
+            🐾 Go to Petclinic
+        </button>
+        
+        <button class="btn btn-secondary" onclick="testAPI()">
+            🔌 Test API
+        </button>
+        
+        <div class="status" id="result"></div>
+    </div>
+
+    <script>
+        function goToPetclinic() {
+            document.getElementById('result').innerHTML = 
+                '🚀 Redirecting to Petclinic...';
+            setTimeout(() => {
+                window.location.href = '/petclinic/';
+            }, 500);
+        }
+        
+        function testAPI() {
+            document.getElementById('result').innerHTML = '⏳ Testing API connection...';
+            
+            fetch('/api/owners')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('result').innerHTML = 
+                        '✅ API Connected!<br><small>Found ' + 
+                        (Array.isArray(data) ? data.length : 'some') + ' owners</small>';
+                })
+                .catch(err => {
+                    document.getElementById('result').innerHTML = 
+                        '❌ API Error: ' + err.message;
+                });
+        }
+    </script>
+</body>
+</html>

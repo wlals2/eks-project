@@ -1,0 +1,3 @@
+temp-secret.yaml
+*secret.yaml
+!*sealed-secret.yaml
