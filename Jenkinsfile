@@ -1,5 +1,36 @@
 pipeline {
-  agent any
+  agent {
+    kubernetes {
+      yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:debug
+    command:
+    - sleep
+    args:
+    - 9999999
+    volumeMounts:
+    - name: kaniko-secret
+      mountPath: /kaniko/.docker
+  - name: kubectl
+    image: bitnami/kubectl:latest
+    command:
+    - sleep
+    args:
+    - 9999999
+  volumes:
+  - name: kaniko-secret
+    secret:
+      secretName: ecr-credentials
+      items:
+      - key: .dockerconfigjson
+        path: config.json
+"""
+    }
+  }
   
   environment {
     ECR_REPO = "010068699561.dkr.ecr.ap-northeast-2.amazonaws.com"
@@ -11,43 +42,39 @@ pipeline {
     stage('Checkout') {
       steps {
         git branch: 'main',
-            credentialsId: 'github-token',
+            credentialsId: 'github-cred',
             url: 'https://github.com/wlals2/eks-project.git'
       }
     }
     
-    stage('Build Docker Image') {
+    stage('Build with Kaniko') {
       steps {
-        script {
-          sh "docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} docker/was/"
-        }
-      }
-    }
-    
-    stage('Push to ECR') {
-      steps {
-        script {
-          withAWS(credentials: 'aws-ecr', region: "${REGION}") {
-            sh """
-              aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_REPO}
-              docker tag ${IMAGE_NAME}:${BUILD_NUMBER} ${ECR_REPO}/${IMAGE_NAME}:${BUILD_NUMBER}
-              docker push ${ECR_REPO}/${IMAGE_NAME}:${BUILD_NUMBER}
-            """
-          }
+        container('kaniko') {
+          sh """
+            /kaniko/executor \
+              --context=\${WORKSPACE}/docker/was \
+              --dockerfile=\${WORKSPACE}/docker/was/Dockerfile \
+              --destination=\${ECR_REPO}/\${IMAGE_NAME}:\${BUILD_NUMBER}
+          """
         }
       }
     }
     
     stage('Update K8s Manifest') {
       steps {
-        script {
+        container('kubectl') {
           sh """
-            sed -i 's|image: .*petclinic:.*|image: ${ECR_REPO}/${IMAGE_NAME}:${BUILD_NUMBER}|' k8s/was-deployment.yaml
+            sed -i 's|image: .*petclinic:.*|image: \${ECR_REPO}/\${IMAGE_NAME}:\${BUILD_NUMBER}|' k8s/was-deployment.yaml
+          """
+        }
+        
+        withCredentials([usernamePassword(credentialsId: 'github-cred', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+          sh """
             git config user.name "Jenkins"
             git config user.email "jenkins@eks.local"
             git add k8s/was-deployment.yaml
-            git commit -m "Update petclinic image to build ${BUILD_NUMBER}"
-            git push https://${GITHUB_TOKEN}@github.com/wlals2/eks-project.git main
+            git commit -m "Update petclinic image to build \${BUILD_NUMBER}"
+            git push https://\${GIT_USERNAME}:\${GIT_PASSWORD}@github.com/wlals2/eks-project.git main
           """
         }
       }
