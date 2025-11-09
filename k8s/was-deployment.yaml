@@ -1,11 +1,11 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: petclinic-deployment
+  name: was-deployment
   labels:
     app: petclinic
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: petclinic
@@ -15,26 +15,42 @@ spec:
         app: petclinic
     spec:
       containers:
-      - name: tomcat
+      - name: petclinic
         image: 010068699561.dkr.ecr.ap-northeast-2.amazonaws.com/petclinic:v1
         ports:
         - containerPort: 8080
+        env:
+        - name: DB_URL
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: DB_URL
+        - name: DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: DB_USERNAME
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: DB_PASSWORD
         resources:
           requests:
-            memory: "512Mi"
-            cpu: "250m"
+            cpu: 500m
+            memory: 512Mi
           limits:
-            memory: "1Gi"
-            cpu: "500m"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: petclinic-service
-spec:
-  type: ClusterIP
-  selector:
-    app: petclinic
-  ports:
-  - port: 8080
-    targetPort: 8080
+            cpu: 1000m
+            memory: 1Gi
+        livenessProbe:
+          httpGet:
+            path: /petclinic
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /petclinic
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 5
