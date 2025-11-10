@@ -9,28 +9,19 @@ spec:
   selector:
     matchLabels:
       app: web
-  template:
+  template:                    # template 하나만!
     metadata:
       labels:
         app: web
-    spec:
-      template:
-        spec:
-          containers:
-          - name: nginx
-            volumeMounts:
-            - name: nginx-config
-              mountPath: /etc/nginx/conf.d
-          volumes:
-          - name: nginx-config
-            configMap:
-              name: nginx-config
-
+    spec:                      # 바로 spec
       containers:
       - name: web
         image: 010068699561.dkr.ecr.ap-northeast-2.amazonaws.com/goupang-web:v1
         ports:
         - containerPort: 80
+        volumeMounts:          # 여기로 이동!
+        - name: nginx-config
+          mountPath: /etc/nginx/conf.d
         resources:
           requests:
             cpu: 100m
@@ -50,3 +41,7 @@ spec:
             port: 80
           initialDelaySeconds: 5
           periodSeconds: 5
+      volumes:                 # volumes도 여기!
+      - name: nginx-config
+        configMap:
+          name: nginx-config
