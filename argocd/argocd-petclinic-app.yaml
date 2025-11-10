@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: petclinic-was
+  namespace: argocd
+spec:
+  project: default
+  
+  # GitHub 저장소 설정
+  source:
+    repoURL: https://github.com/wlals2/eks-project.git
+    targetRevision: main
+    path: k8s  # k8s 디렉토리의 모든 YAML 파일
+  
+  # 배포 대상 클러스터
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default  # WAS가 배포될 네임스페이스
+  
+  # 자동 동기화 설정
+  syncPolicy:
+    automated:
+      prune: true      # 삭제된 리소스 자동 정리
+      selfHeal: true   # 수동 변경 감지 시 자동 복구
+      allowEmpty: false
+    syncOptions:
+    - CreateNamespace=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

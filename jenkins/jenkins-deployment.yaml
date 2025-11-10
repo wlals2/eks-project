@@ -15,35 +15,28 @@ spec:
     spec:
       serviceAccountName: jenkins
       securityContext:
-        fsGroup: 1000      # 이 부분 추가!
-        runAsUser: 1000    # 이 부분 추가!
+        fsGroup: 1000
+        runAsUser: 1000
       containers:
       - name: jenkins
         image: jenkins/jenkins:lts
-        securityContext:
-          privileged: true  # Docker 실행 위해 필요
         ports:
         - containerPort: 8080
         - containerPort: 50000
         volumeMounts:
         - name: jenkins-home
           mountPath: /var/jenkins_home
-        - name: docker-sock
-          mountPath: /var/run/docker.sock
         resources:
           requests:
-            cpu: 500m
-            memory: 500Mi
+            cpu: 250m
+            memory: 512Mi
           limits:
-            cpu: 1000m
+            cpu: 500m
             memory: 1Gi
       volumes:
       - name: jenkins-home
         persistentVolumeClaim:
           claimName: jenkins-pvc
-      - name: docker-sock
-        hostPath:
-          path: /var/run/docker.sock
 ---
 apiVersion: v1
 kind: Service
