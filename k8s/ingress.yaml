@@ -24,10 +24,3 @@ spec:
             name: web-service
             port:
               number: 80
-      - path: /petclinic
-        pathType: Prefix
-        backend:
-          service:
-            name: was-service
-            port:
-              number: 8080

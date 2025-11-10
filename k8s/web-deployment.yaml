@@ -14,6 +14,18 @@ spec:
       labels:
         app: web
     spec:
+      template:
+        spec:
+          containers:
+          - name: nginx
+            volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d
+          volumes:
+          - name: nginx-config
+            configMap:
+              name: nginx-config
+
       containers:
       - name: web
         image: 010068699561.dkr.ecr.ap-northeast-2.amazonaws.com/goupang-web:v1
