@@ -47,5 +47,5 @@ spec:
     - nodes: "5"  # 최대 5개
   
   limits:
-    cpu: "8"
-    memory: 16Gi
+    cpu: "30"
+    memory: 60Gi
