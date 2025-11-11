@@ -1,0 +1,11 @@
+# web-pdb.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: web-pdb
+spec:
+  minAvailable: 1    # Nginx도 최소 1개 유지
+  selector:
+    matchLabels:
+      app: web
+

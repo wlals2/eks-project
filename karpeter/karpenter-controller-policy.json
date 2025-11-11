@@ -1,0 +1,16 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:*",
+        "pricing:GetProducts",
+        "ssm:GetParameter",
+        "iam:PassRole",
+        "eks:DescribeCluster"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

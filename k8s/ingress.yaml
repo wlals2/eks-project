@@ -24,10 +24,3 @@ spec:
             name: web-service
             port:
               number: 80
-      - path: /jenkins
-        pathType: Prefix
-        backend:
-          service:
-            name: jenkins
-            port:
-              number: 8080

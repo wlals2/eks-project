@@ -1,0 +1,10 @@
+# was-pdb.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: was-pdb
+spec:
+  minAvailable: 1    # 최소 1개 Pod는 항상 Running 상태 유지
+  selector:
+    matchLabels:
+      app: petclinic
