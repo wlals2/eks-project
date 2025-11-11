@@ -31,7 +31,7 @@ spec:
           values: ["spot", "on-demand"]
         - key: node.kubernetes.io/instance-type
           operator: In
-          values: ["t3.medium"]
+          values: ["t3.small", "t3.medium", "t3.large", "t3a.medium"]
         - key: topology.kubernetes.io/zone
           operator: In
           values: ["ap-northeast-2a", "ap-northeast-2c"]
