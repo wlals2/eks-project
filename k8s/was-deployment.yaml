@@ -14,6 +14,8 @@ spec:
       labels:
         app: petclinic
     spec:
+      nodeSelector:
+        karpenter.sh/capacity-type: on-demand
       containers:
       - name: petclinic
         image: 010068699561.dkr.ecr.ap-northeast-2.amazonaws.com/petclinic:v1.0.8

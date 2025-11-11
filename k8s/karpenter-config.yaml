@@ -1,12 +1,14 @@
 ---
 # EC2NodeClass - 노드 구성 정의
-apiVersion: karpenter.k8s.aws/v1beta1
+apiVersion: karpenter.k8s.aws/v1
 kind: EC2NodeClass
 metadata:
   name: default
 spec:
-  amiFamily: AL2
+  amiFamily: AL2023
   role: KarpenterNodeRole-eks-product
+  amiSelectorTerms:
+    - alias: al2023@latest
   subnetSelectorTerms:
     - tags:
         karpenter.sh/discovery: eks-product
@@ -16,7 +18,7 @@ spec:
 
 ---
 # NodePool - 노드 프로비저닝 정책
-apiVersion: karpenter.sh/v1beta1
+apiVersion: karpenter.sh/v1
 kind: NodePool
 metadata:
   name: default
@@ -26,16 +28,24 @@ spec:
       requirements:
         - key: karpenter.sh/capacity-type
           operator: In
-          values: ["on-demand"]
+          values: ["spot", "on-demand"]
         - key: node.kubernetes.io/instance-type
           operator: In
           values: ["t3.medium"]
+        - key: topology.kubernetes.io/zone
+          operator: In
+          values: ["ap-northeast-2a", "ap-northeast-2c"]
       nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
         name: default
   
-  # 노드 개수 제한: 1~5개
   disruption:
-    consolidationPolicy: WhenUnderutilized
+    consolidationPolicy: WhenEmptyOrUnderutilized
     consolidateAfter: 30s
     budgets:
-    - nodes: "1-5"  # 최소 1개, 최대 5개 노드 유지
+    - nodes: "5"  # 최대 5개
+  
+  limits:
+    cpu: "8"
+    memory: 16Gi
