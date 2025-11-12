@@ -6,7 +6,7 @@ metadata:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
-    alb.ingress.kubernetes.io/subnets: subnet-0c71a9f142d7dd450,subnet-0cbd66e85e272b97c
+    alb.ingress.kubernetes.io/subnets: subnet-0f7c635d7aee7b62a,subnet-0266359614d81a859,subnet-0d173afc9da89ae52
     alb.ingress.kubernetes.io/healthcheck-path: /
     alb.ingress.kubernetes.io/healthcheck-interval-seconds: '15'
     alb.ingress.kubernetes.io/healthcheck-timeout-seconds: '5'
