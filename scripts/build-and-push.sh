@@ -8,7 +8,7 @@ ECR_REPO="010068699561.dkr.ecr.ap-northeast-2.amazonaws.com"
 REGION="ap-northeast-2"
 JENKINS_URL="http://localhost:8080"
 JENKINS_USER="admin"
-JENKINS_TOKEN="112fdceca6caab663395860fc9f8975fed"
+JENKINS_TOKEN="11fa85685821b2ca7eafcc59727fe06908"
 JENKINS_JOB="petclinic-deploy"
 
 # 자동 버전 생성
