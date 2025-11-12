@@ -1,0 +1,45 @@
+pipeline {
+  agent any
+  
+  parameters {
+    string(name: 'IMAGE_TAG', defaultValue: 'latest', description: 'Docker image tag')
+  }
+  
+  environment {
+    ECR_REPO = "010068699561.dkr.ecr.ap-northeast-2.amazonaws.com"
+    IMAGE_NAME = "petclinic"
+  }
+  
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+    
+    stage('Update K8s Manifest') {
+      steps {
+        script {
+          sh """
+            sed -i 's|image: ${ECR_REPO}/${IMAGE_NAME}:.*|image: ${ECR_REPO}/${IMAGE_NAME}:${IMAGE_TAG}|' k8s/was-deployment.yaml
+            cat k8s/was-deployment.yaml | grep image
+          """
+        }
+      }
+    }
+    
+    stage('Push to Git') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'github-cred', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+          sh """
+            git config user.name "jenkins"
+            git config user.email "jenkins@example.com"
+            git add k8s/was-deployment.yaml
+            git commit -m "Update image tag to ${IMAGE_TAG}" || true
+            git push https://${GIT_USER}:${GIT_PASS}@github.com/YOUR_USERNAME/eks-project.git main
+          """
+        }
+      }
+    }
+  }
+}

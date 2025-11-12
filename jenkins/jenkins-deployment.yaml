@@ -1,3 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jenkins-pvc
+  namespace: jenkins
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -14,9 +26,6 @@ spec:
         app: jenkins
     spec:
       serviceAccountName: jenkins
-      securityContext:
-        fsGroup: 1000
-        runAsUser: 1000
       containers:
       - name: jenkins
         image: jenkins/jenkins:lts
@@ -26,13 +35,16 @@ spec:
         volumeMounts:
         - name: jenkins-home
           mountPath: /var/jenkins_home
+        env:
+        - name: JAVA_OPTS
+          value: "-Djenkins.install.runSetupWizard=false"
         resources:
           requests:
-            cpu: 250m
-            memory: 512Mi
-          limits:
             cpu: 500m
             memory: 1Gi
+          limits:
+            cpu: 2000m
+            memory: 2Gi
       volumes:
       - name: jenkins-home
         persistentVolumeClaim:

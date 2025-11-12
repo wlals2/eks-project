@@ -1,0 +1,29 @@
+controller:
+  serviceType: ClusterIP  # LoadBalancer 대신 ClusterIP
+  admin:
+    Password: "admin123"  # 초기 비밀번호 설정
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "1Gi"
+    limits:
+      cpu: "1000m"
+      memory: "2Gi"
+  installPlugins:
+    - kubernetes:latest
+    - git:latest
+    - workflow-aggregator:latest
+    - credentials-binding:latest
+    - configuration-as-code:latest
+
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClass: "gp3"  # EBS gp3 사용
+
+serviceAccount:
+  create: true
+  name: jenkins
+
+rbac:
+  create: true
