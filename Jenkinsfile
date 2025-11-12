@@ -32,13 +32,24 @@ pipeline {
           sh """
             git config user.name "jenkins"
             git config user.email "jenkins@example.com"
+            git stash
             git pull --rebase origin main
+            git stash pop || true
             git add k8s/was-deployment.yaml
             git commit -m "Update image to ${params.IMAGE_TAG}" || true
             git push https://${GIT_USER}:${GIT_PASS}@github.com/wlals2/eks-project.git main
           """
         }
       }
+    }
+  }
+  
+  post {
+    success {
+      echo "✅ Deployed: ${params.IMAGE_TAG}"
+    }
+    failure {
+      echo "❌ Deployment failed"
     }
   }
 }
