@@ -30,11 +30,15 @@ spec:
           httpGet:
             path: /petclinic/
             port: 8080
-          initialDelaySeconds: 180
+          initialDelaySeconds: 120
           periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
         readinessProbe:
           httpGet:
             path: /petclinic/
             port: 8080
-          initialDelaySeconds: 150
+          initialDelaySeconds: 60
           periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
