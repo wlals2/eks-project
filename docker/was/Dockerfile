@@ -34,3 +34,4 @@ COPY --from=builder /build/target/*.war /usr/local/tomcat/webapps/petclinic.war
 EXPOSE 8080
 
 # Tomcat 실행
+CMD ["catalina.sh", "run"]
